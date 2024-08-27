@@ -1,0 +1,217 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2212                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     compressibleMultiphaseInterFoam;
+
+startFrom       latestTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         20;
+
+deltaT          0.001;
+
+writeControl    adjustableRunTime;
+
+writeInterval   0.05;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable yes;
+
+adjustTimeStep  yes;
+
+maxCo           0.5;
+
+maxAlphaCo      0.5;
+
+maxDeltaT       0.1;
+
+
+functions
+{
+  probes
+  //nombre con el que aparecerá en la carpeta postProcessing
+  {
+      type            probes;
+      libs            (sampling);
+  
+      // Name of the directory for probe data
+      name            probes;
+  
+      // Write at same frequency as fields
+      writeControl    outputTime;
+      writeInterval   1;
+  
+      // Fields to be probed
+      fields          (U p p_rgh phi);
+  
+  
+      // Optional: interpolation scheme to use (default is cell)
+      interpolationScheme cellPoint;
+  
+      probeLocations
+      (
+          ( -0.1 -0.0025 0.0005 )      // inlet
+          ( 0.1  -0.0025 0.0005 )      // outlet
+          ( 0.0    -0.0025 0.0005 )      // middle main line
+          ( 0.0     0.025  0.0005 )      // middle connect line
+          ( 0.0     0.055   0.0005 )      // middle reservoir water
+          ( 0.0     0.095   0.0005 )      // middle reservoir air
+
+      );
+  
+      // Optional: filter out points that haven't been found. Default
+      //           is to include them (with value -VGREAT)
+      includeOutOfBounds  true;
+  }
+
+	surfaceFieldValue_inlet_U-p
+  //nombre con el que aparecerá en la carpeta postProcessing
+	{
+		// Mandatory entries (unmodifiable)
+		type            surfaceFieldValue;
+		libs            (fieldFunctionObjects);
+
+		// Mandatory entries (runtime modifiable)
+    	fields          (U p);
+		operation       average;
+		regionType      patch;
+		name			inlet;
+    
+		runtime modifiable;
+		writeControl    outputTime;
+		writeInterval   1;
+		writeFields     false;
+	}
+
+	surfaceFieldValue_inlet_phi
+  //nombre con el que aparecerá en la carpeta postProcessing
+	{
+		// Mandatory entries (unmodifiable)
+		type            surfaceFieldValue;
+		libs            (fieldFunctionObjects);
+
+		// Mandatory entries (runtime modifiable)  
+    	fields          (phi);
+		operation       sum;
+		regionType      patch;
+		name			      inlet;
+
+		runtime modifiable;
+		writeControl    outputTime;
+		writeInterval   1;
+		writeFields     false;
+	}
+
+	surfaceFieldValue_outlet_U-p
+  //nombre con el que aparecerá en la carpeta postProcessing
+	{
+		// Mandatory entries (unmodifiable)
+		type            surfaceFieldValue;
+		libs            (fieldFunctionObjects);
+
+		// Mandatory entries (runtime modifiable)
+    	fields          (U p);
+		operation       average;
+		regionType      patch;
+		name			outlet;
+    
+		runtime modifiable;
+		writeControl    outputTime;
+		writeInterval   1;
+		writeFields     false;
+	}
+
+	surfaceFieldValue_outlet_phi
+  //nombre con el que aparecerá en la carpeta postProcessing
+	{
+		// Mandatory entries (unmodifiable)
+		type            surfaceFieldValue;
+		libs            (fieldFunctionObjects);
+
+		// Mandatory entries (runtime modifiable)  
+    	fields          (phi);
+		operation       sum;
+		regionType      patch;
+		name			      outlet;
+
+		runtime modifiable;
+		writeControl    outputTime;
+		writeInterval   1;
+		writeFields     false;
+	}
+}
+
+
+
+
+
+
+
+
+functions
+{
+  probes
+  {
+      type            probes;
+      libs            (sampling);
+  
+      // Name of the directory for probe data
+      name            probes;
+  
+      // Write at same frequency as fields
+      //writeControl    outputTime;
+      //writeInterval   1;
+    
+      // Fields to be probed
+      fields          (
+                        U 
+                        "p.*"
+                        );
+  
+    
+      // Optional: interpolation scheme to use (default is cell)
+      //interpolationScheme cellPoint;
+  
+      probeLocations
+      (
+          ( -0.1 -0.0025 0.0005 )      // mitad
+          ( 0.1  -0.0025 0.0005 )      // mitad
+          ( 0.0    -0.0025 0.0005 )      // mitad
+          ( 0.0     0.025  0.0005 )      // mitad
+          ( 0.0     0.09   0.0005 )      // mitad
+      );
+  
+      // Optional: filter out points that haven't been found. Default
+      //           is to include them (with value -VGREAT)
+      //includeOutOfBounds  true;
+  }
+}
+
+// ************************************************************************* //
