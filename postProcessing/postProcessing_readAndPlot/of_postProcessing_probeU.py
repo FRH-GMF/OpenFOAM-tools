@@ -93,7 +93,7 @@ def plot_velocity_components(time, all_velocities, annotations):
 
 
 # Usage
-file_path = './hd_h_uv_v08_results/postProcessing/probes/0.95/U'  # Path to the file
+file_path = './postProcessing_data/probes/0.95/U'  # Path to the file
 time, all_velocities, annotations = read_velocity_data(file_path)
 
 # Print the annotations (probe information)

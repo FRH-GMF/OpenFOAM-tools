@@ -43,7 +43,7 @@ class ProbePlotter:
     def read_data(self, filename):
         """Lee los datos de un archivo y los retorna."""
         time = []
-        pressures = []
+        data = []
         annotations = []
 
         with open(filename, 'r') as file:
@@ -61,7 +61,7 @@ class ProbePlotter:
                 if not line:
                     continue
 
-                print(annotations)
+                # print(annotations)
 
                 # Dividir la línea en valores
                 values = line.split()
@@ -71,28 +71,38 @@ class ProbePlotter:
 
                 # La primera columna es tiempo, el resto son presiones
                 time.append(values[0])
-                pressures.append(values[1:])
+                data.append(values[1:])
 
-        return time, pressures, annotations
+        return time, data, annotations
 
     def plot_files(self, files):
         excluded_files = {}
         for file in files:
             if os.path.basename(file) not in excluded_files:
-                time, pressures, annotations = self.read_data(file)
+                time, data, annotations = self.read_data(file)
                 plt.figure()
-                for i in range(len(pressures[0])):
+                for i in range(len(data[0])):
                     # Agregar la primera anotación junto al label de Probes 1
                     if i < len(annotations):
-                        plt.plot(time, [p[i] for p in pressures],
+                        plt.plot(time, [p[i] for p in data],
                                  label=f'Probe {i} {annotations[i]}')
                     else:
                         plt.plot(time, [p[i]
-                                 for p in pressures], label=f'Probe {i}')
+                                 for p in data], label=f'Probe {i}')
 
                 plt.title(f'Data from {os.path.basename(file)}')
                 plt.xlabel('Time [s]')
-                plt.ylabel('Pressure [Pa]')
+                pressure_files = ["p ", "p_rgh", "p_rgh_0"]
+                flux_files = ["phi", "phi_0"]
+                temperature_files = ["T"]
+                velocity_file = ["U "]
+                if any(substring in os.path.basename(file) for substring in pressure_files):
+                    plt.ylabel('Pressure [Pa]')
+                elif any(substring in os.path.basename(file) for substring in flux_files):
+                    plt.ylabel('Phi []')
+                elif any(substring in os.path.basename(file) for substring in temperature_files):
+                    plt.ylabel('Temperature [K]')
+
                 plt.legend(fontsize=7.5)
                 # Mostrar gráficos de manera no bloqueante
                 plt.show(block=False)
